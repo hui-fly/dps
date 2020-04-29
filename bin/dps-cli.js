@@ -38,7 +38,7 @@ const currDir = process.cwd()
         if(res.value) {
           fs.writeFile(
             path.resolve(currDir, defConf.filename), 
-            defConf.getTemplate({
+            defConf.getTemplate({     // 生成默认配置到defConf.filename
               url: url,
               filepath: outputPath
             }),
@@ -64,7 +64,7 @@ const currDir = process.cwd()
   program.parse(process.argv);
   if (program.args.length < 1) program.help()
 
-function getDpsconfig() {
+function getDpsconfig() {   // 获取生成的配置
   const dpsConfFile = path.resolve(currDir, defConf.filename)
   if(!fs.existsSync(dpsConfFile)) {
     return utils.log.error(`please run 'dps init' to initialize a config file`, 1)

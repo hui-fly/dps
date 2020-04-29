@@ -15,7 +15,7 @@ const genArgs = {
     if(getAgrType(args) !== 'object') return;
     return Object.keys(args).map(item => {
       const {type, value} = args[item];
-      return `${this.prefixName + item }-${type}:${value}`;
+      return `${this.prefixName + item }-${type}:${value}`; // dps-init-function:'....'
     });
   }
 }
