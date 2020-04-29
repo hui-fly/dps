@@ -55,7 +55,7 @@ class DrawPageStructure {
           log.error('[output.filepath:404] please provide the output filepath !', 1); 
         }else{
           const fileStat = fs.statSync(filepath);
-          if(fileStat.isDirectory()) {
+          if(fileStat.isDirectory()) {       // 如果output.filepath是一个文件夹，就在该文件夹下创建html文件，并写入defaultHtml
             filepath = path.join(filepath, 'index.html');
             fs.writeFileSync(filepath, defaultHtml);
             this.filepath = filepath;
@@ -65,7 +65,6 @@ class DrawPageStructure {
   }
   async generateSkeletonHTML(page) {
     let html = '';
-
     try{
       // html = await page.evaluate.call(
       //   page, 
@@ -103,8 +102,7 @@ class DrawPageStructure {
           value: JSON.stringify(this.header)
         }
       });
-      agrs.unshift(evalScripts);
-      html = await page.evaluate.apply(page, agrs);
+      html = await page.evaluate.apply(page, [evalScripts,...agrs]);  // evaluate用于在浏览器环境执行脚本，用法：page.evaluate(function, arguments)
     }catch(e){
       log.error('\n[page.evaluate] ' + e.message);
     }
@@ -115,7 +113,7 @@ class DrawPageStructure {
   }
   writeToFilepath(filepath, html) {
     let fileHTML = fs.readFileSync(filepath);
-    let $ = cheerio.load(fileHTML, {
+    let $ = cheerio.load(fileHTML, { // cheerio可以理解为一个Node.js版本的jquery，用来从网页中以 css selector取数据，使用方式和jquery基本相同。load方法用于装载dom
       decodeEntities: false
     });
     $(this.injectSelector).html(html);
@@ -139,7 +137,7 @@ class DrawPageStructure {
     const userWrite = getAgrType(this.writePageStructure) === 'function';
 
     if(userWrite) {
-      this.writePageStructure(html, this.filepath);
+      this.writePageStructure(html, this.filepath);     // 自己处理生成的骨架屏
     }
 
     if(this.filepath) {
@@ -155,7 +153,7 @@ class DrawPageStructure {
       log.warn(`\nskeleton has created in a default page: ${defaultPage}`);
     }
     
-    spinner.clear().succeed(`skeleton screen has created and output to ${calcText(this.filepath)}`);
+    spinner.clear().succeed(`skeleton screen has created and output to ${calcText(this.filepath)}002`);
 
     if(this.headless) {
       await pp.browser.close();

@@ -3,7 +3,6 @@ module.exports = function evalDOM() {
   const blocks = [];
   const win_w = window.innerWidth;
   const win_h = window.innerHeight;
-
   let agrs = arguments;
   if(!agrs.length) agrs = {length: 1, 0: {}};
   let agrs0 = agrs[0];
@@ -81,15 +80,12 @@ module.exports = function evalDOM() {
   }
 
   function isCustomCardBlock(node) {
-    const bgStyle = getStyle(node, 'background');
-    const bgColorReg = /rgba\([\s\S]+?0\)/ig;
-    const bdReg = /(0px)|(none)/;
-    const hasBgColor = !bgColorReg.test(bgStyle) || ~bgStyle.indexOf('gradient');
-    const hasNoBorder = ['top', 'left', 'right', 'bottom'].some(item => {
-      return bdReg.test(getStyle(node, 'border-'+item));
-    });
+    // const bgStyle = getStyle(node, 'background');
+    // const bgColorReg = /rgba\([\s\S]+?0\)/ig;
+    // const hasBgColor = bgColorReg.test(bgStyle) || bgStyle.indexOf('gradient')!==-1;
     const {w, h} = getRect(node);
-    const customCardBlock = !!(hasBgColor && (!hasNoBorder || getStyle(node, 'box-shadow') != 'none') && w > 0 && h > 0 && w < 0.95*win_w && h < 0.3*win_h);
+    // (有背景/border/有shadow）且有大小
+    const customCardBlock = !!((getStyle(node, 'background').indexOf('none')===-1 || getStyle(node, 'border').indexOf('none')===-1 || getStyle(node, 'box-shadow').indexOf('none')===-1) && w > 0 && h > 0 && w < 0.95*win_w && h < 0.3*win_h);
     return customCardBlock;
   }
 
@@ -232,21 +228,19 @@ module.exports = function evalDOM() {
             if(isHideStyle(node) || (getArgtype($this.includeElement) === 'function' && $this.includeElement(node, drawBlock) == false)) continue;
             let childNodes = node.childNodes;
             let hasChildText = false;
-            let background = getStyle(node, 'backgroundImage');
+            let background = getStyle(node, 'background');
             let backgroundHasurl = background.match(/url\(.+?\)/);
             
             backgroundHasurl = backgroundHasurl && backgroundHasurl.length;
 
-            for(let j = 0; j < childNodes.length; j++) {
+            for(let j = 0; j < childNodes.length; j++) {   // 第一层子节点是否是文本
               if(childNodes[j].nodeType === 3 && childNodes[j].textContent.trim().length) {
                 hasChildText = true;
                 break;
               }
             }
-
-            if((includeElement(ELEMENTS, node) || 
-              backgroundHasurl ||
-              (node.nodeType === 3 && node.textContent.trim().length) || hasChildText ||
+            // 只对以下这些节点进行渲染
+            if((includeElement(ELEMENTS, node) || backgroundHasurl ||(node.nodeType === 3 && node.textContent.trim().length) || hasChildText ||
               isCustomCardBlock(node)) && !$this.inHeader(node)) {
                 const {t, l, w, h} = getRect(node);
                 

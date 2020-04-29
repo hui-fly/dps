@@ -22,7 +22,7 @@ const currDir = process.cwd()
   .description('create a default dps.config.js file')
   .action(function(env, options) {
     const dpsConfFile = path.resolve(currDir, defConf.filename)
-    if(fs.existsSync(dpsConfFile)) {
+    if(fs.existsSync(dpsConfFile)) {  // 如果目录存在 返回 true ，如果目录不存在 返回false
       return console.log(`\n[${defConf.filename}] had been created! you can edit it and then run 'dps start'\n`)
     }
     askForConfig().then(({url, filepath}) => {
@@ -54,7 +54,7 @@ const currDir = process.cwd()
 
   program
   .command('start')
-  .description('start create a skeleton screen')
+  .description('start create a skeleton screen001')
   .action(function() {
     new DrawPageStructure(getDpsconfig()).start();
   });
